@@ -129,7 +129,7 @@ Also you will need jdk8 version of FunctionalJava artifacts (4.7+).
 <dependency>
   <groupId>org.derive4j</groupId>
   <artifactId>derive4j</artifactId>
-  <version>0.12.0</version>
+  <version>0.12.1</version>
   <optional>true</optional>
 </dependency>
 ```
@@ -138,14 +138,14 @@ Also you will need jdk8 version of FunctionalJava artifacts (4.7+).
 ## Gradle
 ```
 compile "org.functionaljava:functionaljava_1.8:4.7"
-compile(group: 'org.derive4j', name: 'derive4j', version: '0.12.0', ext: 'jar')
+compile(group: 'org.derive4j', name: 'derive4j', version: '0.12.1', ext: 'jar')
 compile(group: 'org.derive4j', name: 'derive4j-fj', version: '0.1', ext: 'jar')
 ```
 or better using the [gradle-apt-plugin](https://github.com/tbroyer/gradle-apt-plugin):
 ```
 compile "org.functionaljava:functionaljava_1.8:4.7"
-compileOnly "org.derive4j:derive4j-annotation:0.12.0"
-apt "org.derive4j:derive4j:0.12.0"
+compileOnly "org.derive4j:derive4j-annotation:0.12.1"
+apt "org.derive4j:derive4j:0.12.1"
 apt "org.derive4j:derive4j-fj:0.1"
 ```
 

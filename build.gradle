@@ -168,3 +168,4 @@ artifactory {
 task env << {
     println System.getenv()
 }
+

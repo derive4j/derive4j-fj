@@ -1,0 +1,170 @@
+buildscript {
+    ext {
+        uptodateVersion = "1.6.2"
+    }
+
+    repositories {
+        mavenLocal()
+        jcenter()
+        mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+
+    dependencies {
+        classpath "com.ofg:uptodate-gradle-plugin:$uptodateVersion"
+        classpath "net.ltgt.gradle:gradle-apt-plugin:0.10"
+        classpath "nl.javadude.gradle.plugins:license-gradle-plugin:0.11.0"
+        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:3.1.0"
+    }
+
+    wrapper {
+        gradleVersion = "3.5"
+    }
+
+}
+
+apply plugin: "net.ltgt.apt"
+apply plugin: "java"
+apply plugin: "eclipse"
+apply plugin: "idea"
+apply plugin: "com.ofg.uptodate"
+apply plugin: "license"
+apply plugin: 'com.jfrog.artifactory-upload'
+apply plugin: "maven"
+apply plugin: "osgi"
+apply from: "$rootDir/lib.gradle"
+
+defaultTasks 'build'
+
+ext {
+    isSnapshot = true
+    d4jFJBaseVersion = "0.1"
+
+    snapshotAppendix = "-SNAPSHOT"
+    d4jFJVersion = d4jFJBaseVersion + (isSnapshot ? snapshotAppendix : "")
+
+    projectTitle = "Derive4J - Auto derivation for Functional Java"
+    projectName = "derive4j-fj"
+    pomProjectName = projectTitle
+    pomOrganisation = "Derive4J contributors"
+    projectDescription = "Derivation of Functional-Java optics and typeclasses via Derive4J API"
+    projectUrl = "https://github.com/derive4j/derive4j-fj"
+    scmUrl = "git://github.com/derive4j/derive4j-fj.git"
+    scmGitFile = "scm:git@github.com:derive4j/derive4j-fj.git"
+
+    primaryEmail = "jb@giraudeau.info"
+
+    dependencyAutoService = "com.google.auto.service:auto-service:1.0-rc2"
+}
+
+repositories {
+    jcenter()
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+    compileOnly "org.derive4j:derive4j-processor-api:0.12.0"
+    compileOnly dependencyAutoService
+    apt dependencyAutoService
+}
+
+
+archivesBaseName = projectName
+version = d4jFJVersion
+group = "org.derive4j"
+
+sourceCompatibility = "1.8"
+
+task javadocJar(type: Jar, dependsOn: "javadoc") {
+    classifier = 'javadoc'
+    from "build/docs/javadoc"
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs << "-Xlint:all"
+}
+
+artifacts {
+    archives jar
+    archives javadocJar
+    archives sourcesJar
+}
+
+jar {
+    version project.d4jFJVersion
+    manifest {
+        name = projectTitle
+        instruction 'Signature-Version', project.d4jFJVersion
+        instruction 'Bundle-ActivationPolicy', 'lazy'
+        instruction 'Bundle-Vendor', 'derive4j.org'
+        if(project.name != "processor") {
+            instruction 'Require-Bundle', 'org.derive4j.fj;bundle-version="'+project.d4jFJBaseVersion+'"'
+        }
+    }
+}
+
+eclipse {
+    project {
+        natures 'org.eclipse.pde.PluginNature'
+        buildCommand 'org.eclipse.pde.ManifestBuilder'
+        buildCommand 'org.eclipse.pde.SchemaBuilder'
+    }
+}
+
+// Output MANIFEST.MF statically so eclipse can see it for plugin development
+task eclipsePluginManifest(dependsOn: jar) << {
+    file("META-INF").mkdirs()
+    jar.manifest.writeTo(file("META-INF/MANIFEST.MF"))
+}
+
+eclipseProject.dependsOn eclipsePluginManifest
+
+artifactoryPublish {
+    dependsOn sourcesJar, javadocJar
+}
+
+license {
+    header project.file('etc/HEADER.txt')
+    strictCheck true
+    mapping {
+        java = 'SLASHSTAR_STYLE'
+    }
+}
+
+configureUpload("The GNU General Public License")
+
+artifactory {
+    contextUrl = 'http://oss.jfrog.org/artifactory'   //The base Artifactory URL if not overridden by the publisher/resolver
+    publish {
+        repository {
+            // The Artifactory repository key to publish to :
+            if (isSnapshot) {
+                repoKey = 'oss-snapshot-local'
+            } else {
+                repoKey = 'oss-release-local'
+            }
+            username = jfrogUsername         //The publisher user name
+            password = jfrogPassword      //The publisher password
+        }
+        defaults {
+            publishConfigs('archives')
+        }
+    }
+    resolve {
+        repository {
+            repoKey = 'libs-releases'  //The Artifactory (preferably virtual) repository key to resolve from
+        }
+    }
+}
+
+task env << {
+    println System.getenv()
+}

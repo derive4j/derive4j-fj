@@ -1,0 +1,42 @@
+
+
+void configureUpload(String licenseName) {
+    install {
+        repositories.mavenInstaller {
+            pom {
+                groupId = project.group
+                project {
+                    name pomProjectName
+                    packaging 'jar'
+                    description projectDescription
+                    url projectUrl
+                    organization {
+                        name pomOrganisation
+                        url projectUrl
+                    }
+                    scm {
+                        url scmUrl
+                    }
+                    licenses {
+                        license {
+                            name licenseName
+                            url "https://github.com/derive4j/derive4j-fj/blob/master/LICENSE.txt"
+                            distribution 'repo'
+                        }
+                    }
+                    developers {
+                        developer {
+                            name "Jean-Baptiste Giraudeau"
+                            email primaryEmail
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+}
+
+ext {
+    configureUpload = this.&configureUpload
+}

@@ -2,10 +2,10 @@
 
 This Derive4J extension permits automatic derivation of [FunctionalJava](https://github.com/functionaljava/functionaljava) instances for the following type classes:
 
- - Equal
- - Hash
- - Show
- - Ord
+ - [Equal](https://github.com/functionaljava/functionaljava/blob/master/core/src/main/java/fj/Equal.java)
+ - [Hash](https://github.com/functionaljava/functionaljava/blob/master/core/src/main/java/fj/Hash.java)
+ - [Show](https://github.com/functionaljava/functionaljava/blob/master/core/src/main/java/fj/Show.java)
+ - [Ord](https://github.com/functionaljava/functionaljava/blob/master/core/src/main/java/fj/Ord.java)
 
 (generation of optics is planned).
 

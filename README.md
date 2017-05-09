@@ -11,6 +11,18 @@ This [Derive4J](https://github.com/derive4j/derive4j) extension permits automati
 
 So, now, no excuse to write [unsafe code that breaks parametricity](https://github.com/derive4j/derive4j/issues/50)! ;)
 
+# "Implicit" resolution of instances
+
+The derivation of a type classes may often depends on the type class instances of the data type fields.
+Derive4J will try its best to resolve those dependencies for you, following rules similar to scala implicit resolution.
+In some cases, Derive4J can fail to find a valid instance for a field, for one of two reasons:
+
+ - either because it does not exist (in the expected classes, ie. its an "orphan instance")
+ - or because the instance for that field is not yet generated AND the field type is parametrized.
+
+In both cases you will have to provide a static field or method (in the class of the ADT under derivation) that returns the missing type class instance.
+The implementation can simply be a forward to a generated instance (for the second case).
+
 # Example Usage:
 ```java
 
@@ -129,7 +141,7 @@ Also you will need jdk8 version of FunctionalJava artifacts (4.7+).
 <dependency>
   <groupId>org.derive4j</groupId>
   <artifactId>derive4j</artifactId>
-  <version>0.12.1</version>
+  <version>0.12.2</version>
   <optional>true</optional>
 </dependency>
 ```
@@ -138,14 +150,14 @@ Also you will need jdk8 version of FunctionalJava artifacts (4.7+).
 ## Gradle
 ```
 compile "org.functionaljava:functionaljava_1.8:4.7"
-compile(group: 'org.derive4j', name: 'derive4j', version: '0.12.1', ext: 'jar')
+compile(group: 'org.derive4j', name: 'derive4j', version: '0.12.2', ext: 'jar')
 compile(group: 'org.derive4j', name: 'derive4j-fj', version: '0.1', ext: 'jar')
 ```
 or better using the [gradle-apt-plugin](https://github.com/tbroyer/gradle-apt-plugin):
 ```
 compile "org.functionaljava:functionaljava_1.8:4.7"
-compileOnly "org.derive4j:derive4j-annotation:0.12.1"
-apt "org.derive4j:derive4j:0.12.1"
+compileOnly "org.derive4j:derive4j-annotation:0.12.2"
+apt "org.derive4j:derive4j:0.12.2"
 apt "org.derive4j:derive4j-fj:0.1"
 ```
 

@@ -1,6 +1,6 @@
 # FunctionalJava on Derive4J steroids!
 
-This Derive4J extension permits automatic derivation of [FunctionalJava](https://github.com/functionaljava/functionaljava) instances for the following type classes:
+This [Derive4J](https://github.com/derive4j/derive4j) extension permits automatic derivation of [FunctionalJava](https://github.com/functionaljava/functionaljava) instances for the following type classes:
 
  - [Equal](https://github.com/functionaljava/functionaljava/blob/master/core/src/main/java/fj/Equal.java)
  - [Hash](https://github.com/functionaljava/functionaljava/blob/master/core/src/main/java/fj/Hash.java)

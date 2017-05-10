@@ -13,11 +13,11 @@ So, now, no excuse to write [unsafe code that breaks parametricity](https://gith
 
 # "Implicit" resolution of instances
 
-The derivation of a type classes may often depends on the type class instances of the data type fields.
+The implementation of a type class instance may often depends on the instances of the data type fields.
 Derive4J will try its best to resolve those dependencies for you, following rules similar to scala implicit resolution.
-In some cases, Derive4J can fail to find a valid instance for a field, for one of two reasons:
+In some cases, Derive4J can fail to find a valid instance for a field, for one of the following two reasons:
 
- - either because it does not exist (in the expected classes, ie. its an "orphan instance")
+ - because it does not exist (in the expected classes, ie. its an "orphan instance")
  - or because the instance for that field is not yet generated AND the field type is parametrized.
 
 In both cases you will have to provide a static field or method (in the class of the ADT under derivation) that returns the missing type class instance.

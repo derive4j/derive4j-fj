@@ -82,17 +82,13 @@ public final class FunctionalJavaTypeClassesDerivations implements DerivatorFact
             instanceUtils.generateInstanceFactory(CodeBlock.builder()
                 .add("$1T.hash($2L -> $2L.", hashClass, instanceUtils.adtVariableName())
                 .add(instanceUtils.matchImpl(constructor -> {
-                  int nbConstructors = adt.dataConstruction().constructors().size();
-                  int constructorIndex = IntStream.range(0, nbConstructors)
-                      .filter(i -> adt.dataConstruction().constructors().get(i).name().equals(constructor.name()))
-                      .findFirst()
-                      .getAsInt();
 
+                  String primeForThisConstructor = PRIMES.get(constructor.index()).toString();
                   return deriveUtils.lambdaImpl(constructor, CodeBlock.builder()
                       .add("$L", IntStream.range(0, constructor.arguments().size() - 1)
                           .mapToObj(__ -> "(")
                           .collect(Collectors.joining()))
-                      .add(PRIMES.get(constructorIndex).toString())
+                      .add(primeForThisConstructor)
                       .add(constructor.arguments()
                           .stream()
                           .map(da -> CodeBlock.builder()
@@ -100,7 +96,7 @@ public final class FunctionalJavaTypeClassesDerivations implements DerivatorFact
                               .add(instanceUtils.instanceFor(da))
                               .add(".hash($L)", da.fieldName())
                               .build())
-                          .reduce((cb1, cb2) -> cb1.toBuilder().add(") * " + PRIMES.get(constructorIndex)).add(cb2).build())
+                          .reduce((cb1, cb2) -> cb1.toBuilder().add(") * " + primeForThisConstructor).add(cb2).build())
                           .orElse(CodeBlock.of("")))
                       .build());
                 }))

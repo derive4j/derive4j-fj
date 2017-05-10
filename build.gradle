@@ -40,7 +40,7 @@ defaultTasks 'build'
 
 ext {
     isSnapshot = true
-    d4jFJBaseVersion = "0.1"
+    d4jFJBaseVersion = "0.2"
 
     snapshotAppendix = "-SNAPSHOT"
     d4jFJVersion = d4jFJBaseVersion + (isSnapshot ? snapshotAppendix : "")

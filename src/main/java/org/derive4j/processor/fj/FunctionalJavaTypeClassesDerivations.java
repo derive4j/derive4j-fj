@@ -27,6 +27,7 @@ import java.util.stream.IntStream;
 import org.derive4j.processor.api.DerivatorFactory;
 import org.derive4j.processor.api.DerivatorSelection;
 import org.derive4j.processor.api.DeriveUtils;
+import org.derive4j.processor.api.model.DataArgument;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
@@ -63,7 +64,9 @@ public final class FunctionalJavaTypeClassesDerivations implements DerivatorFact
                     .add("$T.fromString($S).append(() -> ", streamClass, constructor.name() + "(")
                     .add(constructor.arguments()
                         .stream()
-                        .map(da -> instanceUtils.instanceFor(da).toBuilder().add(".show($L)", da.fieldName()).build())
+                        .map(da -> instanceUtils.instanceFor(da).toBuilder()
+                            .add(".show($L)", castWildcardedArg(da, "", deriveUtils))
+                            .build())
                         .reduce((cb1, cb2) -> cb1.toBuilder()
                             .add(".append($T.fromString($S)).append(() -> ", streamClass, ", ")
                             .add(cb2)
@@ -94,7 +97,7 @@ public final class FunctionalJavaTypeClassesDerivations implements DerivatorFact
                           .map(da -> CodeBlock.builder()
                               .add(" + ")
                               .add(instanceUtils.instanceFor(da))
-                              .add(".hash($L)", da.fieldName())
+                              .add(".hash($L)", castWildcardedArg(da, "", deriveUtils))
                               .build())
                           .reduce((cb1, cb2) -> cb1.toBuilder().add(") * " + primeForThisConstructor).add(cb2).build())
                           .orElse(CodeBlock.of("")))
@@ -121,7 +124,9 @@ public final class FunctionalJavaTypeClassesDerivations implements DerivatorFact
                               .stream()
                               .map(da -> CodeBlock.builder()
                                   .add(instanceUtils.instanceFor(da))
-                                  .add(".eq($L, $L)", da.fieldName() + "1", da.fieldName() + "2")
+                                  .add(".eq($L, $L)"
+                                      , castWildcardedArg(da, "1", deriveUtils)
+                                      , castWildcardedArg(da, "2", deriveUtils))
                                   .build())
                               .reduce((cb1, cb2) -> cb1.toBuilder().add(" && ").add(cb2).build())
                               .orElse(CodeBlock.of("true"))
@@ -154,7 +159,9 @@ public final class FunctionalJavaTypeClassesDerivations implements DerivatorFact
                                   .map(da -> CodeBlock.builder()
                                       .add("o = ")
                                       .add(instanceUtils.instanceFor(da))
-                                      .add(".compare($L, $L);\n", da.fieldName() + "1", da.fieldName() + "2")
+                                      .add(".compare($L, $L);\n"
+                                          , castWildcardedArg(da, "1", deriveUtils)
+                                          , castWildcardedArg(da, "2", deriveUtils))
                                       .addStatement("if (o != $T.EQ) return o", ordering)
                                       .build())
                                   .reduce((cb1, cb2) -> cb1.toBuilder().add(cb2).build())
@@ -169,11 +176,14 @@ public final class FunctionalJavaTypeClassesDerivations implements DerivatorFact
                       .build());
                 }))
                 .add(")")
-                .build())
+                .build()))));
+  }
 
-        ))
+  private static CodeBlock castWildcardedArg(DataArgument da, String argSuffix, DeriveUtils deriveUtils) {
+      return deriveUtils.isWildcarded(da.type())
 
-    );
+          ? CodeBlock.of("($T) $L", deriveUtils.types().erasure(da.type()), da.fieldName() + argSuffix)
 
+          : CodeBlock.of("$L", da.fieldName() + argSuffix);
   }
 }

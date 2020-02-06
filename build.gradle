@@ -1,8 +1,4 @@
 buildscript {
-    ext {
-        uptodateVersion = "1.6.2"
-    }
-
     repositories {
         mavenLocal()
         jcenter()
@@ -14,20 +10,20 @@ buildscript {
 
     dependencies {
         classpath "com.ofg:uptodate-gradle-plugin:1.6.3"
-        classpath "net.ltgt.gradle:gradle-apt-plugin:0.15"
-        classpath "gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.14.0"
-        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.6.2"
-        classpath "com.diffplug.spotless:spotless-plugin-gradle:3.10.0"
+        classpath "gradle.plugin.com.hierynomus.gradle.plugins:license-gradle-plugin:0.15.0"
+        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.9.9"
+        classpath "com.diffplug.spotless:spotless-plugin-gradle:3.24.2"
+        classpath "org.javamodularity:moduleplugin:1.6.0"
     }
 
     wrapper {
-        gradleVersion = "4.6"
+        gradleVersion = "5.6.2"
     }
 
 }
 
-apply plugin: "net.ltgt.apt"
 apply plugin: "java"
+apply plugin: "org.javamodularity.moduleplugin"
 apply plugin: "eclipse"
 apply plugin: "idea"
 apply plugin: "com.ofg.uptodate"
@@ -42,7 +38,7 @@ defaultTasks 'build'
 
 ext {
     isSnapshot = true
-    d4jFJBaseVersion = "0.2"
+    d4jFJBaseVersion = "0.3"
 
     snapshotAppendix = "-SNAPSHOT"
     d4jFJVersion = d4jFJBaseVersion + (isSnapshot ? snapshotAppendix : "")
@@ -58,7 +54,7 @@ ext {
 
     primaryEmail = "jb@giraudeau.info"
 
-    dependencyAutoService = "com.google.auto.service:auto-service:1.0-rc4"
+    dependencyAutoService = "com.google.auto.service:auto-service:1.0-rc6"
 }
 
 repositories {
@@ -68,9 +64,9 @@ repositories {
 }
 
 dependencies {
-    compileOnly "org.derive4j:derive4j-processor-api:0.12.4"
+    compileOnly "org.derive4j:derive4j-processor-api:1.2.0"
     compileOnly dependencyAutoService
-    apt dependencyAutoService
+    annotationProcessor dependencyAutoService
 }
 
 
@@ -78,16 +74,16 @@ archivesBaseName = projectName
 version = d4jFJVersion
 group = "org.derive4j"
 
-sourceCompatibility = "1.8"
+sourceCompatibility = "9"
 
 task javadocJar(type: Jar, dependsOn: "javadoc") {
-    classifier = 'javadoc'
+    archiveClassifier = 'javadoc'
     from "build/docs/javadoc"
 }
 
 task sourcesJar(type: Jar) {
     from sourceSets.main.allSource
-    classifier = 'sources'
+    archiveClassifier = 'sources'
 }
 
 tasks.withType(JavaCompile) {

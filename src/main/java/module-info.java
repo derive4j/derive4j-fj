@@ -19,6 +19,8 @@
 module derive4j.fj {
     requires static auto.service.annotations;
     requires derive4j.processor.api;
+    requires java.compiler;
+    requires com.squareup.javapoet;
 
     provides org.derive4j.processor.api.DerivatorFactory
         with org.derive4j.processor.fj.FunctionalJavaTypeClassesDerivations;

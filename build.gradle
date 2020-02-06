@@ -64,7 +64,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly "org.derive4j:derive4j-processor-api:1.2.0-SNAPSHOT"
+    compileOnly "org.derive4j:derive4j-processor-api:1.2.0"
     compileOnly dependencyAutoService
     annotationProcessor dependencyAutoService
 }
